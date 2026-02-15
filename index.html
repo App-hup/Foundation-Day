@@ -64,80 +64,78 @@
     <div id="message"></div>
   </div>
 
-  <script>
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzHoLu77epiWB-zsUh97bpSiiwH18O_jFWl18Y1deI6L_a23tYN5ylw1TKCpgk1UAFr/exec';
-    let selectedFiles = [];
+ <script>
+  const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzHoLu77epiWB-zsUh97bpSiiwH18O_jFWl18Y1deI6L_a23tYN5ylw1TKCpgk1UAFr/exec';
+  let selectedFiles = [];
 
-    document.getElementById('files').addEventListener('change', function(e) {
-      selectedFiles = Array.from(e.target.files);
-      const list = document.getElementById('filesList');
-      list.innerHTML = selectedFiles.map(f => `<div>${f.name} (${(f.size/1024/1024).toFixed(1)}MB)</div>`).join('');
-    });
+  document.getElementById('files').addEventListener('change', function(e) {
+    selectedFiles = Array.from(e.target.files);
+    const list = document.getElementById('filesList');
+    list.innerHTML = selectedFiles.map(f => `<div>${f.name} (${(f.size/1024/1024).toFixed(1)}MB)</div>`).join('');
+  });
 
-    document.getElementById('studentForm').addEventListener('submit', async function(e) {
-      e.preventDefault();
-      
-      const btn = document.getElementById('submitBtn');
-      const message = document.getElementById('message');
-      btn.disabled = true;
-      btn.textContent = '⏳ جاري الإرسال...';
-      message.innerHTML = '';
+  document.getElementById('studentForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const btn = document.getElementById('submitBtn');
+    const message = document.getElementById('message');
+    btn.disabled = true;
+    btn.textContent = '⏳ جاري الإرسال...';
+    message.innerHTML = '';
 
-      try {
-        const filesData = [];
-        for (let file of selectedFiles) {
-          if (file.size > 50 * 1024 * 1024) {
-            throw new Error(`الملف ${file.name} أكبر من 50MB`);
-          }
-          const base64 = await fileToBase64(file);
-          filesData.push({
-            name: file.name,
-            mimeType: file.type || 'application/octet-stream',
-            base64: base64.split(',')[1] // remove data: URL prefix
-          });
+    try {
+      const filesData = [];
+      for (let file of selectedFiles) {
+        if (file.size > 50 * 1024 * 1024) {
+          throw new Error(`الملف ${file.name} أكبر من 50MB`);
         }
-
-        const formData = {
-          studentName: document.getElementById('studentName').value,
-          grade: document.getElementById('grade').value,
-          title: document.getElementById('title').value,
-          description: document.getElementById('description').value,
-          files: filesData
-        };
-
-        const response = await fetch(WEB_APP_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(formData)
+        const base64 = await fileToBase64(file);
+        filesData.push({
+          name: file.name,
+          mimeType: file.type || 'application/octet-stream',
+          base64: base64.split(',')[1] // remove data: URL prefix
         });
-
-        const result = await response.json();
-        
-        if (result.success) {
-          message.innerHTML = '<div class="success">✅ ' + result.message + '<br>ستجد مشاركتك في الـ Sheet قريبًا!</div>';
-          document.getElementById('studentForm').reset();
-          selectedFiles = [];
-          document.getElementById('filesList').innerHTML = '';
-        } else {
-          throw new Error(result.error || 'خطأ في الإرسال');
-        }
-      } catch (error) {
-        message.innerHTML = '<div class="error">❌ خطأ: ' + error.message + '</div>';
-      } finally {
-        btn.disabled = false;
-        btn.textContent = '📤 إرسال المشاركة';
       }
-    });
 
-    function fileToBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
+      const formData = {
+        studentName: document.getElementById('studentName').value,
+        grade: document.getElementById('grade').value,
+        title: document.getElementById('title').value,
+        description: document.getElementById('description').value,
+        files: filesData
+      };
+
+      // طلب بسيط بدون ترويسات مخصصة لتفادي CORS
+      await fetch(WEB_APP_URL, {
+        method: 'POST',
+        body: JSON.stringify(formData)
       });
+
+      // لا نحاول قراءة الرد (سيكون محجوب CORS)، فقط نعرض نجاح
+      message.innerHTML = '<div class="success">✅ تم إرسال المشاركة بنجاح! ستظهر في السجل خلال لحظات.</div>';
+      document.getElementById('studentForm').reset();
+      selectedFiles = [];
+      document.getElementById('filesList').innerHTML = '';
+
+    } catch (error) {
+      message.innerHTML = '<div class="error">❌ خطأ أثناء الإرسال: ' + error.message + '</div>';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '📤 إرسال المشاركة';
     }
-  </script>
+  });
+
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+    });
+  }
+</script>
+
 </body>
 </html>
+
 
