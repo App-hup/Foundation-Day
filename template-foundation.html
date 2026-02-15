@@ -3,12 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <title>قالب يوم التأسيس</title>
+
+  <!-- خط عربي مناسب (Cairo) -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+
   <style>
     body {
       margin: 0;
       padding: 20px;
       background: #cccccc;
-      font-family: "Tahoma", "Segoe UI", sans-serif;
+      font-family: "Cairo", "Tahoma", "Segoe UI", sans-serif;
     }
 
     .page {
@@ -16,8 +20,8 @@
       width: 210mm;
       height: 297mm;
       margin: 0 auto;
-      background-image: url('tnzyl.jpg');  /* ← صورة الخلفية التي أرسلتها */
-      background-size: cover;
+      background-image: url('tnzyl.jpg');  /* صورة الخلفية */
+      background-size: 100% 100%;          /* إظهار الصورة كاملة على A4 */
       background-position: center top;
       background-repeat: no-repeat;
       box-shadow: 0 0 10px rgba(0,0,0,0.3);
@@ -40,40 +44,42 @@
       }
     }
 
-    /* الشعار في أعلى المنتصف (تحت شريط النص الموجود في الخلفية) */
+    /* الشعار أعلى المنتصف (أصغر قليلًا) */
     .logo {
       position: absolute;
-      top: 35mm;          /* إذا أردت رفع/خفض الشعار غيّر القيمة */
+      top: 30mm;
       left: 50%;
       transform: translateX(-50%);
       text-align: center;
     }
 
     .logo img {
-      max-height: 25mm;
+      max-height: 20mm;
     }
 
-    /* النص الأعلى يمين */
+    /* نص المملكة + الوزارة + المدرسة – في منتصف الجهة اليمنى وبخط أصغر */
     .top-right-text {
       position: absolute;
-      top: 40mm;          /* ارتفاع المجموعة فوق/تحت */
-      right: 20mm;        /* بعد عن يمين الصفحة */
+      top: 50%;                 /* منتصف الصفحة عموديًا */
+      right: 18mm;
+      transform: translateY(-50%);
       text-align: right;
-      line-height: 1.7;
-      font-size: 16pt;
-      font-weight: bold;
+      line-height: 1.6;
+      font-size: 13pt;          /* كان 16pt */
+      font-weight: 600;
+      color: #333333;
     }
 
-    /* تذييل الأسماء في الأسفل، فوق الرسوم السفلية بقليل */
+    /* التذييل السفلي – تصغير بسيط للخط */
     .bottom-area {
       position: absolute;
-      bottom: 40mm;       /* ارفع/أنزل كل التذييل بتغيير هذه القيمة */
+      bottom: 40mm;
       left: 15mm;
       right: 15mm;
       display: flex;
       justify-content: space-between;
-      font-size: 14pt;
-      font-weight: bold;
+      font-size: 12pt;          /* كان 14pt */
+      font-weight: 600;
     }
 
     .bottom-col {
@@ -92,7 +98,7 @@
       <img src="logo.png" alt="شعار">
     </div>
 
-    <!-- نص يمين أعلى -->
+    <!-- نص يمين منتصف الصفحة -->
     <div class="top-right-text">
       <div>المملكة العربية السعودية</div>
       <div>وزارة التعليم</div>
